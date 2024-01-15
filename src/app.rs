@@ -1,16 +1,25 @@
-use crate::components::Library;
+use std::{fmt::format, fs::File};
+
+use egui_phosphor::regular::*;
+use log::info;
+
+use crate::components::{Library, PVModule, Project};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize, Default)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct PVApp {
     library: Library,
+    project: Project,
 }
 
 impl PVApp {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         if let Some(storage) = cc.storage {
+            let mut fonts = egui::FontDefinitions::default();
+            egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
+            cc.egui_ctx.set_fonts(fonts);
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
         Default::default()
@@ -47,14 +56,59 @@ impl eframe::App for PVApp {
             });
         });
 
+        egui::SidePanel::right("library").show(ctx, |ui| {
+            if ui.button("Add panel").clicked() {
+                self.library.pv_modules.push(PVModule::default());
+            }
+
+            for (id, module) in self.library.pv_modules.iter_mut().enumerate() {
+                ui.add(module);
+                if ui.button("Add to project").clicked() {
+                    self.project.pv_modules.push(id);
+                }
+            }
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                if ui.button("Save").clicked() {
+                    _ = serde_json::to_writer_pretty(
+                        File::create("lib.json").unwrap(),
+                        &self.library,
+                    );
+                }
+            }
+        });
+
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
+            // this is a bit inefficient, but readable. TODO: This should be a result struct that is calculated once.
+
+            let res = self.project.sum(&self.library);
+
+            ui.label(format!("You have {} modules installed.", self.project.pv_modules.len()));
+
+
+            ui.label(format!("{:?}", res));
+            ui.label(format!("Peak output: {:?} watts", res.energy_sum));
+            ui.label(format!("Cost: {:?} Eur", res.price_sum));
+            ui.label(format!("Area: {:?} sqm", res.area_sum / 10000.));
+            
+            ui.label(format!("Actual output: {:?} watts", res.energy_sum/1000. * self.project.yield_kwh_kwp));
+            
+            ui.add(egui::DragValue::new(&mut self.project.yield_kwh_kwp));
+
+            egui::ComboBox::from_label("")
+                .selected_text(format!("{CLOUD_SUN} Exposure"))
+                .show_ui(ui, |ui| {
+                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 1000., "Sunny");
+                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 400., "Light clouds");
+                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 150., "Heavy clouds");
+                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 50., "Rain");
+                });
 
             ui.separator();
 
             ui.add(egui::github_link_file!(
-                "https://github.com/emilk/eframe_template/blob/master/",
+                "https://github.com/woelper/pvcalc",
                 "Source code."
             ));
 

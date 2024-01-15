@@ -9,3 +9,16 @@ Photovoltaic project planning tool
 - location search
 - Calc battery needs
 - calc income
+
+
+## Try it!
+
+https://woelper.github.io/pvcalc/
+
+
+
+## Links
+
+https://de.wikipedia.org/wiki/Globalstrahlung
+
+https://gruenes.haus/photovoltaik-solaranlage-leistung/

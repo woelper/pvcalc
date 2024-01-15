@@ -861,6 +861,7 @@ version = "0.1.0"
 dependencies = [
  "eframe",
  "egui",
+ "egui-phosphor",
  "env_logger",
  "log",
  "serde",
@@ -881,6 +882,15 @@ dependencies = [
  "nohash-hasher",
  "ron",
  "serde",
+]
+
+[[package]]
+name = "egui-phosphor"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4c126eaf783c79eb64e56fce242635b4d81292c9a46635d108568507aeba8a7"
+dependencies = [
+ "egui",
 ]
 
 [[package]]

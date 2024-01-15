@@ -1,0 +1,14 @@
+{
+  "pv_modules": [
+    {
+      "brand": "Aleo",
+      "model": "LEO Black 400 Wp Premium - L84S400",
+      "size_cm": {
+        "x": 114.4,
+        "y": 175.2
+      },
+      "price_eur": 206.0,
+      "energy_wp": 400.0
+    }
+  ]
+}
