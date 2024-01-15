@@ -48,7 +48,7 @@ pub struct Library {
 
 impl Default for Library {
     fn default() -> Self {
-        serde_json::from_reader(File::open("lib.json").expect("This library must exist and be valid")).expect("Library must load")
+        serde_json::from_str(include_str!("../lib.json")).expect("Library must load")
     }
 }
 

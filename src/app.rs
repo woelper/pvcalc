@@ -62,7 +62,10 @@ impl eframe::App for PVApp {
             }
 
             for (id, module) in self.library.pv_modules.iter_mut().enumerate() {
-                ui.add(module);
+                ui.push_id(id, |ui| {
+                    ui.add(module);
+
+                });
                 if ui.button("Add to project").clicked() {
                     self.project.pv_modules.push(id);
                 }
