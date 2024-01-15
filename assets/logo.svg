@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.72426347"
+     inkscape:cx="396.95499"
+     inkscape:cy="561.25984"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ffcc00;stop-opacity:1"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="106.11034"
+       y1="92.702377"
+       x2="117.34622"
+       y2="148.66553"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-13.242754,-16.673155)" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:#ffeb00;stroke-width:1.297;fill-opacity:1"
+       id="path2"
+       inkscape:flatsided="false"
+       sodipodi:sides="16"
+       sodipodi:cx="43.076618"
+       sodipodi:cy="108.85296"
+       sodipodi:r1="58.760395"
+       sodipodi:r2="48.638329"
+       sodipodi:arg1="0.82400095"
+       sodipodi:arg2="1.028003"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 82.991995,151.97542 -14.792229,-1.47496 -4.7484,13.46741 -13.101794,-7.02342 -9.540705,10.62513 -9.416731,-11.50264 -12.880524,6.16527 -4.298056,-14.23068 -14.25939974,0.76681 1.47495984,-14.79223 -13.4674111,-4.7484 7.0234259,-13.1018 -10.6251319,-9.5407 11.5026396,-9.416734 -6.1652716,-12.880524 14.2306797,-4.298055 -0.7668053,-14.2594 14.7922286,1.47496 4.7484,-13.467412 13.101795,7.023426 9.540705,-10.625131 9.416731,11.502639 12.880524,-6.165272 4.298055,14.23068 14.2594,-0.766805 -1.47496,14.792228 13.467412,4.748401 -7.023426,13.101799 10.625134,9.5407 -11.502642,9.41673 6.165272,12.88053 -14.23068,4.29805 z"
+       inkscape:transform-center-x="1.3909427"
+       inkscape:transform-center-y="-2.2880685"
+       transform="matrix(0.64807444,0,0,0.64807444,68.958648,35.956291)"
+       inkscape:export-filename="icon_ios_touch_192.png"
+       inkscape:export-xdpi="64.079483"
+       inkscape:export-ydpi="64.079483" />
+    <circle
+       style="opacity:1;fill:url(#linearGradient2);fill-opacity:1;stroke-width:1.297"
+       id="path1"
+       cx="97.092461"
+       cy="106.07262"
+       r="26.41992" />
+  </g>
+</svg>
