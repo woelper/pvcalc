@@ -1,9 +1,13 @@
 use std::{fmt::format, fs::File};
 
+use egui::{vec2, Rounding};
 use egui_phosphor::regular::*;
 use log::info;
 
-use crate::components::{Library, PVModule, Project};
+use crate::{
+    components::{Library, Panel, Project},
+    tr,
+};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize, Default)]
@@ -19,7 +23,45 @@ impl PVApp {
         if let Some(storage) = cc.storage {
             let mut fonts = egui::FontDefinitions::default();
             egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
+
+            fonts.font_data.insert(
+                "my_font".to_owned(),
+                egui::FontData::from_static(include_bytes!("../assets/Inter-Regular.ttf")),
+            );
+
+            fonts
+                .families
+                .entry(egui::FontFamily::Proportional)
+                .or_default()
+                .insert(0, "my_font".to_owned());
             cc.egui_ctx.set_fonts(fonts);
+
+            let mut style = (*cc.egui_ctx.style()).clone();
+            style.text_styles = [
+                (
+                    egui::TextStyle::Heading,
+                    egui::FontId::new(30.0, egui::FontFamily::Proportional),
+                ),
+                (
+                    egui::TextStyle::Body,
+                    egui::FontId::new(14.0, egui::FontFamily::Proportional),
+                ),
+                (
+                    egui::TextStyle::Monospace,
+                    egui::FontId::new(14.0, egui::FontFamily::Proportional),
+                ),
+                (
+                    egui::TextStyle::Button,
+                    egui::FontId::new(14.0, egui::FontFamily::Proportional),
+                ),
+                (
+                    egui::TextStyle::Small,
+                    egui::FontId::new(10.0, egui::FontFamily::Proportional),
+                ),
+            ]
+            .into();
+            cc.egui_ctx.set_style(style);
+
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
         Default::default()
@@ -57,19 +99,30 @@ impl eframe::App for PVApp {
         });
 
         egui::SidePanel::right("library").show(ctx, |ui| {
-            if ui.button("Add panel").clicked() {
-                self.library.pv_modules.push(PVModule::default());
-            }
-
-            for (id, module) in self.library.pv_modules.iter_mut().enumerate() {
-                ui.push_id(id, |ui| {
-                    ui.add(module);
-
-                });
-                if ui.button("Add to project").clicked() {
-                    self.project.pv_modules.push(id);
+            ui.collapsing(format!("{RECTANGLE} Panels"), |ui| {
+                for (id, module) in self.library.panels.iter_mut().enumerate() {
+                    ui.push_id(id, |ui| {
+                        ui.add(module);
+                    });
+                    if ui.button(tr!("Add to project")).clicked() {
+                        self.project.pv_modules.push(id);
+                    }
                 }
-            }
+
+                ui.separator();
+
+                if ui
+                    .add(
+                        egui::Button::new(PLUS).rounding(Rounding::same(20.)), // .fill(ui.style().visuals.hyperlink_color)
+                                                                               // .min_size(vec2(30., 30.)),
+                    )
+                    .clicked()
+                {
+                    self.library.panels.push(Panel::default());
+                }
+            });
+
+            ui.collapsing(tr!("{BATTERY_FULL} Batteries"), |ui| {});
 
             #[cfg(not(target_arch = "wasm32"))]
             {
@@ -83,30 +136,55 @@ impl eframe::App for PVApp {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // this is a bit inefficient, but readable. TODO: This should be a result struct that is calculated once.
-
             let res = self.project.sum(&self.library);
 
-            ui.label(format!("You have {} modules installed.", self.project.pv_modules.len()));
+            ui.label(format!(
+                "You have {} modules installed.",
+                self.project.pv_modules.len()
+            ));
 
+            ui.label(format!("Peak: {:?} watts", res.energy_sum));
+            ui.label(format!("Kosten: {:?} Eur", res.price_sum));
+            ui.label(format!("Flaeche: {:?} qm", res.area_sum / 10000.));
 
-            ui.label(format!("{:?}", res));
-            ui.label(format!("Peak output: {:?} watts", res.energy_sum));
-            ui.label(format!("Cost: {:?} Eur", res.price_sum));
-            ui.label(format!("Area: {:?} sqm", res.area_sum / 10000.));
-            
-            ui.label(format!("Actual output: {:?} watts", res.energy_sum/1000. * self.project.yield_kwh_kwp));
-            
-            ui.add(egui::DragValue::new(&mut self.project.yield_kwh_kwp));
+            ui.horizontal(|ui| {
+                ui.label("Preis kwh");
+                ui.add(egui::DragValue::new(&mut self.project.price_kwh_eur_buy).suffix(" eur"));
+            });
+            ui.horizontal(|ui| {
+                ui.label("Einspeiseverguetung kwh");
+                ui.add(egui::DragValue::new(&mut self.project.price_kwh_eur_sell).suffix(" eur"));
+            });
+            ui.horizontal(|ui| {
+                ui.label("Verbrauch kwh/jahr");
+                ui.add(egui::DragValue::new(&mut self.project.consumption_kwh).suffix(" kwh"));
+                egui::ComboBox::from_id_source("v")
+                    .selected_text(format!("{CLOUD_SUN} Verbrauch"))
+                    .show_ui(ui, |ui| {
+                        ui.selectable_value(&mut self.project.consumption_kwh, 1500., "1 Person");
+                        ui.selectable_value(&mut self.project.consumption_kwh, 2500., "2 Personen");
+                        ui.selectable_value(&mut self.project.consumption_kwh, 3500., "3 Personen");
+                        ui.selectable_value(&mut self.project.consumption_kwh, 4250., "4 Personen");
+                    });
+            });
 
-            egui::ComboBox::from_label("")
-                .selected_text(format!("{CLOUD_SUN} Exposure"))
-                .show_ui(ui, |ui| {
-                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 1000., "Sunny");
-                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 400., "Light clouds");
-                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 150., "Heavy clouds");
-                    ui.selectable_value(&mut self.project.yield_kwh_kwp, 50., "Rain");
-                });
+            ui.horizontal(|ui| {
+                ui.label("Globalstrahlung");
+                ui.add(egui::DragValue::new(&mut self.project.yield_kwh_kwp));
+                egui::ComboBox::from_label("")
+                    .selected_text(format!("{CLOUD_SUN} Exposure"))
+                    .show_ui(ui, |ui| {
+                        ui.selectable_value(&mut self.project.yield_kwh_kwp, 1000., "Sunny");
+                        ui.selectable_value(&mut self.project.yield_kwh_kwp, 400., "Light clouds");
+                        ui.selectable_value(&mut self.project.yield_kwh_kwp, 150., "Heavy clouds");
+                        ui.selectable_value(&mut self.project.yield_kwh_kwp, 50., "Rain");
+                    });
+            });
+
+            ui.label(format!(
+                "Tatsaechlicher Ertrag: {:?} w",
+                res.energy_sum / 1000. * self.project.yield_kwh_kwp
+            ));
 
             ui.separator();
 
