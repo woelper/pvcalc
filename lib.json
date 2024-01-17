@@ -10,5 +10,14 @@
       "price_eur": 206.0,
       "energy_wp": 400.0
     }
+  ],
+  "batteries": [
+    {
+      "brand": "Orbis",
+      "model": "BSo200 Deep Cycle Solar-Power",
+      "price_eur": 259.76,
+      "energy_ahr": 200.0,
+      "voltage": 12.0
+    }
   ]
 }

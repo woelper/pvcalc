@@ -1,7 +1,9 @@
-use std::fs::File;
+use std::{fs::File, collections::HashMap};
 
 use egui::{Vec2, Widget};
 use serde::{Deserialize, Serialize};
+
+use crate::tr;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(default)]
@@ -25,23 +27,23 @@ pub struct Battery {
 
 impl Widget for &mut Battery {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
-        egui::Grid::new("Module")
+        egui::Grid::new("batt")
             .striped(true)
             .num_columns(2)
             .show(ui, |ui| {
-                ui.label("Brand");
+                ui.label(tr!("Marke"));
                 ui.text_edit_singleline(&mut self.brand);
                 ui.end_row();
-                ui.label("Model");
+                ui.label(tr!("Modell"));
                 ui.text_edit_singleline(&mut self.model);
                 ui.end_row();
-                ui.label("Price");
+                ui.label(tr!("Preis"));
                 ui.add(egui::DragValue::new(&mut self.price_eur).suffix(" Eur"));
                 ui.end_row();
-                ui.label("Energy output");
+                ui.label(tr!("Leistung"));
                 ui.add(egui::DragValue::new(&mut self.energy_ahr).suffix(" ahr"));
                 ui.end_row();
-                ui.label("Voltage");
+                ui.label(tr!("Spannung"));
                 ui.add(egui::DragValue::new(&mut self.voltage).suffix(" V"));
                 ui.end_row();
             })
@@ -51,17 +53,17 @@ impl Widget for &mut Battery {
 
 impl Widget for &mut Panel {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
-        egui::Grid::new("Module")
+        egui::Grid::new("panel")
             .striped(true)
             .num_columns(2)
             .show(ui, |ui| {
-                ui.label("Brand");
+                ui.label(tr!("Marke"));
                 ui.text_edit_singleline(&mut self.brand);
                 ui.end_row();
-                ui.label("Model");
+                ui.label(tr!("Modell"));
                 ui.text_edit_singleline(&mut self.model);
                 ui.end_row();
-                ui.label("Size (W x H)");
+                ui.label(tr!("Groesse (W x H)"));
                 ui.horizontal(|ui| {
                     ui.add(egui::DragValue::new(&mut self.size_cm.x).suffix(" cm"));
                     ui.add(egui::DragValue::new(&mut self.size_cm.y).suffix(" cm"));
@@ -95,7 +97,8 @@ impl Default for Library {
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(default)]
 pub struct Project {
-    pub pv_modules: Vec<usize>,
+    pub panels: Vec<usize>,
+    pub batteries: Vec<usize>,
     /// Specific yield (regional / time based)
     pub yield_kwh_kwp: f32,
     pub consumption_kwh: f32,
@@ -105,7 +108,7 @@ pub struct Project {
 
 impl Project {
     pub fn sum(&self, library: &Library) -> ProjectResult {
-        self.pv_modules
+        self.panels
             .iter()
             .map(|id| library.panels.get(*id))
             .filter_map(|x| x)

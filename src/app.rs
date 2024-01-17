@@ -1,11 +1,11 @@
-use std::{fmt::format, fs::File};
+use std::{fmt::format, fs::File, collections::HashMap};
 
 use egui::{vec2, Rounding};
 use egui_phosphor::regular::*;
 use log::info;
 
 use crate::{
-    components::{Library, Panel, Project},
+    components::{Battery, Library, Panel, Project},
     tr,
 };
 
@@ -100,13 +100,22 @@ impl eframe::App for PVApp {
 
         egui::SidePanel::right("library").show(ctx, |ui| {
             ui.collapsing(format!("{RECTANGLE} Panels"), |ui| {
+                let mut delete: Option<usize> = None;
+
                 for (id, module) in self.library.panels.iter_mut().enumerate() {
                     ui.push_id(id, |ui| {
                         ui.add(module);
                     });
-                    if ui.button(tr!("Add to project")).clicked() {
-                        self.project.pv_modules.push(id);
+                    if ui.button(tr!("Hinzufuegen")).clicked() {
+                        self.project.panels.push(id);
                     }
+                    if ui.button(TRASH_SIMPLE).clicked() {
+                        delete = Some(id);
+                    }
+                }
+
+                if let Some(id) = delete {
+                    self.library.panels.remove(id);
                 }
 
                 ui.separator();
@@ -122,7 +131,39 @@ impl eframe::App for PVApp {
                 }
             });
 
-            ui.collapsing(tr!("{BATTERY_FULL} Batteries"), |ui| {});
+            ui.collapsing(tr!("{BATTERY_FULL} Batterien"), |ui| {
+                let mut delete: Option<usize> = None;
+
+                for (id, battery) in self.library.batteries.iter_mut().enumerate() {
+                    ui.push_id(id, |ui| {
+                        ui.add(battery);
+                    });
+                    if ui.button(tr!("Hinzufuegen")).clicked() {
+                        self.project.batteries.push(id);
+                    }
+                    if ui.button(TRASH_SIMPLE).clicked() {
+                        delete = Some(id);
+                    }
+                }
+                
+
+
+                if let Some(id) = delete {
+                    self.library.panels.remove(id);
+                }
+
+                ui.separator();
+
+                if ui
+                    .add(
+                        egui::Button::new(PLUS).rounding(Rounding::same(20.)), // .fill(ui.style().visuals.hyperlink_color)
+                                                                               // .min_size(vec2(30., 30.)),
+                    )
+                    .clicked()
+                {
+                    self.library.batteries.push(Battery::default());
+                }
+            });
 
             #[cfg(not(target_arch = "wasm32"))]
             {
@@ -138,41 +179,41 @@ impl eframe::App for PVApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             let res = self.project.sum(&self.library);
 
-            ui.label(format!(
-                "You have {} modules installed.",
-                self.project.pv_modules.len()
+            ui.label(tr!(
+                "{} Panels installiert.",
+                self.project.panels.len()
             ));
 
-            ui.label(format!("Peak: {:?} watts", res.energy_sum));
-            ui.label(format!("Kosten: {:?} Eur", res.price_sum));
-            ui.label(format!("Flaeche: {:?} qm", res.area_sum / 10000.));
+            ui.label(tr!("Peak: {:?} watts", res.energy_sum));
+            ui.label(tr!("Kosten: {:?} Eur", res.price_sum));
+            ui.label(tr!("Flaeche: {:?} qm", res.area_sum / 10000.));
 
             ui.horizontal(|ui| {
-                ui.label("Preis kwh");
+                ui.label(tr!("Preis pro kwh"));
                 ui.add(egui::DragValue::new(&mut self.project.price_kwh_eur_buy).suffix(" eur"));
             });
             ui.horizontal(|ui| {
-                ui.label("Einspeiseverguetung kwh");
+                ui.label(tr!("Einspeiseverguetung pro kwh"));
                 ui.add(egui::DragValue::new(&mut self.project.price_kwh_eur_sell).suffix(" eur"));
             });
             ui.horizontal(|ui| {
-                ui.label("Verbrauch kwh/jahr");
+                ui.label(tr!("Verbrauch kwh/Jahr"));
                 ui.add(egui::DragValue::new(&mut self.project.consumption_kwh).suffix(" kwh"));
                 egui::ComboBox::from_id_source("v")
-                    .selected_text(format!("{CLOUD_SUN} Verbrauch"))
+                    .selected_text(tr!("{CLOUD_SUN} Verbrauch"))
                     .show_ui(ui, |ui| {
-                        ui.selectable_value(&mut self.project.consumption_kwh, 1500., "1 Person");
-                        ui.selectable_value(&mut self.project.consumption_kwh, 2500., "2 Personen");
-                        ui.selectable_value(&mut self.project.consumption_kwh, 3500., "3 Personen");
-                        ui.selectable_value(&mut self.project.consumption_kwh, 4250., "4 Personen");
+                        ui.selectable_value(&mut self.project.consumption_kwh, 1500., tr!("1 Person"));
+                        ui.selectable_value(&mut self.project.consumption_kwh, 2500., tr!("2 Personen"));
+                        ui.selectable_value(&mut self.project.consumption_kwh, 3500., tr!("3 Personen"));
+                        ui.selectable_value(&mut self.project.consumption_kwh, 4250., tr!("4 Personen"));
                     });
             });
 
             ui.horizontal(|ui| {
-                ui.label("Globalstrahlung");
+                ui.label(tr!("Globalstrahlung"));
                 ui.add(egui::DragValue::new(&mut self.project.yield_kwh_kwp));
                 egui::ComboBox::from_label("")
-                    .selected_text(format!("{CLOUD_SUN} Exposure"))
+                    .selected_text(tr!("{CLOUD_SUN} Exposure"))
                     .show_ui(ui, |ui| {
                         ui.selectable_value(&mut self.project.yield_kwh_kwp, 1000., "Sunny");
                         ui.selectable_value(&mut self.project.yield_kwh_kwp, 400., "Light clouds");
@@ -181,7 +222,9 @@ impl eframe::App for PVApp {
                     });
             });
 
-            ui.label(format!(
+            // Solaranlage erzeugt pro kWp etwa 1.000 kWh pro Jahr. 
+            // https://www.zolar.de/blog/was-bringt-eine-solaranlage-im-winter
+            ui.label(tr!(
                 "Tatsaechlicher Ertrag: {:?} w",
                 res.energy_sum / 1000. * self.project.yield_kwh_kwp
             ));
