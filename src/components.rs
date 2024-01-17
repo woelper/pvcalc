@@ -1,5 +1,3 @@
-use std::{fs::File, collections::HashMap};
-
 use egui::{Vec2, Widget};
 use serde::{Deserialize, Serialize};
 
@@ -81,7 +79,7 @@ impl Widget for &mut Panel {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-// #[serde(default)]
+/// The library holds all things you can use in your project.
 pub struct Library {
     pub panels: Vec<Panel>,
     #[serde(default)]
@@ -94,7 +92,7 @@ impl Default for Library {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
 pub struct Project {
     pub panels: Vec<usize>,
@@ -106,6 +104,19 @@ pub struct Project {
     pub price_kwh_eur_sell: f32,
 }
 
+impl Default for Project {
+    fn default() -> Self {
+        Self {
+            panels: Default::default(),
+            batteries: Default::default(),
+            yield_kwh_kwp: 1000.0,
+            consumption_kwh: 2500.0,
+            price_kwh_eur_buy: 0.4229,
+            price_kwh_eur_sell: 0.082,
+        }
+    }
+}
+
 impl Project {
     pub fn sum(&self, library: &Library) -> ProjectResult {
         self.panels
@@ -113,7 +124,7 @@ impl Project {
             .map(|id| library.panels.get(*id))
             .filter_map(|x| x)
             .fold(ProjectResult::default(), |acc, p| ProjectResult {
-                energy_sum: acc.energy_sum + p.energy_wp,
+                energy_sum_wp: acc.energy_sum_wp + p.energy_wp,
                 price_sum: acc.price_sum + p.price_eur,
                 area_sum: acc.area_sum + p.size_cm.x * p.size_cm.y,
             })
@@ -123,7 +134,7 @@ impl Project {
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(default)]
 pub struct ProjectResult {
-    pub energy_sum: f32,
+    pub energy_sum_wp: f32,
     pub price_sum: f32,
     pub area_sum: f32,
 }
