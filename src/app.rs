@@ -254,6 +254,10 @@ impl eframe::App for PVApp {
                     "Einnahmen: {:?} E",
                     net_yield * self.project.price_kwh_eur_sell
                 ));
+                ui.label(tr!(
+                    "Amortisiert in {:?} Jahren",
+                    res.price_sum/(net_yield * self.project.price_kwh_eur_sell)  
+                ));
             } else {
                 ui.label(tr!(
                     "Zukauf aus Netz: {:?} E",
