@@ -104,6 +104,10 @@ pub struct Project {
     pub consumption_kwh: f32,
     pub price_kwh_eur_buy: f32,
     pub price_kwh_eur_sell: f32,
+    /// how much the panel deviates from right-angle to the sun. 0=facing sun
+    pub panel_angle_deg: f32,
+    /// 0-180. how much the panel deviates from facing south. 0=facing south
+    pub panel_orientation: f32,
 }
 
 impl Project {
