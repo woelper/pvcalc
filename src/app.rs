@@ -1,4 +1,4 @@
-use std::{fmt::format, fs::File, collections::HashMap};
+use std::{collections::HashMap, fmt::format, fs::File};
 
 use egui::{vec2, Rounding};
 use egui_phosphor::regular::*;
@@ -76,12 +76,7 @@ impl eframe::App for PVApp {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
-
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
-
             egui::menu::bar(ui, |ui| {
                 // NOTE: no File->Quit on web pages!
                 let is_web = cfg!(target_arch = "wasm32");
@@ -93,7 +88,6 @@ impl eframe::App for PVApp {
                     });
                     ui.add_space(16.0);
                 }
-
                 egui::widgets::global_dark_light_mode_buttons(ui);
             });
         });
@@ -145,8 +139,6 @@ impl eframe::App for PVApp {
                         delete = Some(id);
                     }
                 }
-                
-
 
                 if let Some(id) = delete {
                     self.library.panels.remove(id);
@@ -179,33 +171,56 @@ impl eframe::App for PVApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             let res = self.project.sum(&self.library);
 
-            ui.label(tr!(
-                "{} Panels installiert.",
-                self.project.panels.len()
-            ));
+            ui.label(tr!("{} Panels installiert.", self.project.panels.len()));
 
-            ui.label(tr!("Peak: {:?} watts", res.energy_sum));
+            ui.label(tr!("Peak: {:?} watts", res.energy_sum_wp));
             ui.label(tr!("Kosten: {:?} Eur", res.price_sum));
             ui.label(tr!("Flaeche: {:?} qm", res.area_sum / 10000.));
 
             ui.horizontal(|ui| {
-                ui.label(tr!("Preis pro kwh"));
-                ui.add(egui::DragValue::new(&mut self.project.price_kwh_eur_buy).suffix(" eur"));
+                ui.label(tr!("Preis pro kWh"));
+                ui.add(
+                    egui::DragValue::new(&mut self.project.price_kwh_eur_buy)
+                        .speed(0.01)
+                        .suffix(" eur"),
+                );
             });
+
             ui.horizontal(|ui| {
-                ui.label(tr!("Einspeiseverguetung pro kwh"));
-                ui.add(egui::DragValue::new(&mut self.project.price_kwh_eur_sell).suffix(" eur"));
+                ui.label(tr!("Einspeiseverguetung pro kWh"));
+                ui.add(
+                    egui::DragValue::new(&mut self.project.price_kwh_eur_sell)
+                        .speed(0.01)
+                        .suffix(" eur"),
+                );
             });
+
             ui.horizontal(|ui| {
-                ui.label(tr!("Verbrauch kwh/Jahr"));
-                ui.add(egui::DragValue::new(&mut self.project.consumption_kwh).suffix(" kwh"));
+                ui.label(tr!("Verbrauch kWh/Jahr"));
+                ui.add(egui::DragValue::new(&mut self.project.consumption_kwh).suffix(" kWh"));
                 egui::ComboBox::from_id_source("v")
                     .selected_text(tr!("{CLOUD_SUN} Verbrauch"))
                     .show_ui(ui, |ui| {
-                        ui.selectable_value(&mut self.project.consumption_kwh, 1500., tr!("1 Person"));
-                        ui.selectable_value(&mut self.project.consumption_kwh, 2500., tr!("2 Personen"));
-                        ui.selectable_value(&mut self.project.consumption_kwh, 3500., tr!("3 Personen"));
-                        ui.selectable_value(&mut self.project.consumption_kwh, 4250., tr!("4 Personen"));
+                        ui.selectable_value(
+                            &mut self.project.consumption_kwh,
+                            1500.,
+                            tr!("1 Person"),
+                        );
+                        ui.selectable_value(
+                            &mut self.project.consumption_kwh,
+                            2500.,
+                            tr!("2 Personen"),
+                        );
+                        ui.selectable_value(
+                            &mut self.project.consumption_kwh,
+                            3500.,
+                            tr!("3 Personen"),
+                        );
+                        ui.selectable_value(
+                            &mut self.project.consumption_kwh,
+                            4250.,
+                            tr!("4 Personen"),
+                        );
                     });
             });
 
@@ -222,22 +237,39 @@ impl eframe::App for PVApp {
                     });
             });
 
-            // Solaranlage erzeugt pro kWp etwa 1.000 kWh pro Jahr. 
+            // Solaranlage erzeugt pro kWp etwa 1.000 kWh pro Jahr.
             // https://www.zolar.de/blog/was-bringt-eine-solaranlage-im-winter
+            let yield_year_kwh = res.energy_sum_wp / 1000. * self.project.yield_kwh_kwp;
+            ui.label(tr!("Ertrag pro jahr: {:?} kWh", yield_year_kwh));
+
+            let net_yield = yield_year_kwh - self.project.consumption_kwh;
+
             ui.label(tr!(
-                "Tatsaechlicher Ertrag: {:?} w",
-                res.energy_sum / 1000. * self.project.yield_kwh_kwp
+                "Rest: {:?} kWh",
+                yield_year_kwh - self.project.consumption_kwh
             ));
 
-            ui.separator();
-
-            ui.add(egui::github_link_file!(
-                "https://github.com/woelper/pvcalc",
-                "Source code."
-            ));
+            if net_yield.is_sign_positive() {
+                ui.label(tr!(
+                    "Einnahmen: {:?} E",
+                    net_yield * self.project.price_kwh_eur_sell
+                ));
+                ui.label(tr!(
+                    "Amortisiert in {:?} Jahren",
+                    res.price_sum/(net_yield * self.project.price_kwh_eur_sell)  
+                ));
+            } else {
+                ui.label(tr!(
+                    "Zukauf aus Netz: {:?} E",
+                    net_yield * self.project.price_kwh_eur_buy
+                ));
+            }
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                egui::warn_if_debug_build(ui);
+                ui.add(egui::github_link_file!(
+                    "https://github.com/woelper/pvcalc",
+                    "Source code."
+                ));
             });
         });
     }
