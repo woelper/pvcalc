@@ -5,7 +5,7 @@ use egui_phosphor::regular::*;
 use log::info;
 
 use crate::{
-    components::{Battery, Library, Panel, Project},
+    components::{Battery, Library, Panel, Project, compound_interest},
     tr,
 };
 
@@ -242,30 +242,30 @@ impl eframe::App for PVApp {
             let yield_year_kwh = res.energy_sum_wp / 1000. * self.project.yield_kwh_kwp;
             ui.label(tr!("Ertrag pro jahr: {:?} kWh", yield_year_kwh));
 
-            let net_yield = yield_year_kwh - self.project.consumption_kwh;
+            let regular_energy_cost = self.project.consumption_kwh * self.project.price_kwh_eur_buy;
+            ui.label(tr!("Marktkosten Strom/Jahr: {regular_energy_cost} €"));
 
-            ui.label(tr!(
-                "Rest: {:?} kWh",
-                yield_year_kwh - self.project.consumption_kwh
-            ));
+            
 
-            if net_yield.is_sign_positive() {
-                ui.label(tr!(
-                    "Einnahmen: {:?} E",
-                    net_yield * self.project.price_kwh_eur_sell
-                ));
-                ui.label(tr!(
-                    "Amortisiert in {:?} Jahren",
-                    res.price_sum/(net_yield * self.project.price_kwh_eur_sell)  
-                ));
-            } else {
-                ui.label(tr!(
-                    "Zukauf aus Netz: {:?} E",
-                    net_yield * self.project.price_kwh_eur_buy
-                ));
-            }
+            // how much of the power we generate can be self-used
+            let consumption_covered = yield_year_kwh.min(self.project.consumption_kwh);
+            let amount_to_sell = (yield_year_kwh - self.project.consumption_kwh).max(0.0);
+            println!("cov {consumption_covered}");
+            println!("sell {amount_to_sell}");
+
+            let combined_benefit = consumption_covered * self.project.price_kwh_eur_buy + amount_to_sell * self.project.price_kwh_eur_sell;
+            
+            ui.label(tr!("Gesamteinnahmen {}", combined_benefit));
+            ui.label(tr!("Amortisiert nach {} Jahren", res.price_sum / combined_benefit));
+            let alternative_investment = compound_interest(res.price_sum, self.project.interest_rate_deposit, res.price_sum / combined_benefit);
+            ui.label(tr!("Alternativ: Investitionssumme verzinsen: {:?} €", alternative_investment));
+            ui.label(tr!("Strom: {:?} €", alternative_investment/(self.project.consumption_kwh*self.project.price_kwh_eur_buy)));
+            
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+                if ui.button("reset").clicked() {
+                    self.project = Default::default();
+                }
                 ui.add(egui::github_link_file!(
                     "https://github.com/woelper/pvcalc",
                     "Source code."

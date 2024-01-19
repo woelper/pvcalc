@@ -106,6 +106,7 @@ pub struct Project {
     pub panel_angle_deg: f32,
     /// 0-180. how much the panel deviates from facing south. 0=facing south
     pub panel_orientation: f32,
+    pub interest_rate_deposit: f32
 }
 
 impl Default for Project {
@@ -117,6 +118,9 @@ impl Default for Project {
             consumption_kwh: 2500.0,
             price_kwh_eur_buy: 0.4229,
             price_kwh_eur_sell: 0.082,
+            panel_angle_deg: 0.0,
+            panel_orientation: 0.0,
+            interest_rate_deposit: 0.04
         }
     }
 }
@@ -145,4 +149,8 @@ pub struct ProjectResult {
 
 fn wp_to_kwh(kwp: f32) -> f32 {
     1.
+}
+
+pub fn compound_interest(start_capital:f32, interest: f32, years: f32) -> f32 {
+    start_capital * (1.0+interest).powf(years)
 }
