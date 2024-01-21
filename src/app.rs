@@ -5,7 +5,7 @@ use egui_phosphor::regular::*;
 use log::info;
 
 use crate::{
-    components::{compound_interest, Battery, Library, Panel, Project},
+    components::{compound_interest, Battery, Library, Panel, Project, Inverter},
     panel_orientation::efficiency,
     tr,
 };
@@ -123,6 +123,38 @@ impl eframe::App for PVApp {
                     .clicked()
                 {
                     self.library.panels.push(Panel::default());
+                }
+            });
+
+            ui.collapsing(tr!("{RECTANGLE} Inverter"), |ui| {
+                let mut delete: Option<usize> = None;
+
+                for (id, inverter) in self.library.inverters.iter_mut().enumerate() {
+                    ui.push_id(id, |ui| {
+                        ui.add(inverter);
+                    });
+                    if ui.button(tr!("Hinzufuegen")).clicked() {
+                        self.project.inverters.push(id);
+                    }
+                    if ui.button(TRASH_SIMPLE).clicked() {
+                        delete = Some(id);
+                    }
+                }
+
+                if let Some(id) = delete {
+                    self.library.inverters.remove(id);
+                }
+
+                ui.separator();
+
+                if ui
+                    .add(
+                        egui::Button::new(PLUS).rounding(Rounding::same(20.)), // .fill(ui.style().visuals.hyperlink_color)
+                                                                               // .min_size(vec2(30., 30.)),
+                    )
+                    .clicked()
+                {
+                    self.library.inverters.push(Inverter::default());
                 }
             });
 

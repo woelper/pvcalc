@@ -22,6 +22,15 @@ pub struct Battery {
     pub energy_ahr: f32,
     pub voltage: f32,
 }
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+#[serde(default)]
+pub struct Inverter {
+    pub brand: String,
+    pub model: String,
+    pub price_eur: f32,
+    pub kwp_max: f32,
+    pub energy_out: f32,
+}
 
 impl Widget for &mut Battery {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
@@ -43,6 +52,32 @@ impl Widget for &mut Battery {
                 ui.end_row();
                 ui.label(tr!("Spannung"));
                 ui.add(egui::DragValue::new(&mut self.voltage).suffix(" V"));
+                ui.end_row();
+            })
+            .response
+    }
+}
+
+impl Widget for &mut Inverter {
+    fn ui(self, ui: &mut egui::Ui) -> egui::Response {
+        egui::Grid::new("inv")
+            .striped(true)
+            .num_columns(2)
+            .show(ui, |ui| {
+                ui.label(tr!("Marke"));
+                ui.text_edit_singleline(&mut self.brand);
+                ui.end_row();
+                ui.label(tr!("Modell"));
+                ui.text_edit_singleline(&mut self.model);
+                ui.end_row();
+                ui.label(tr!("Preis"));
+                ui.add(egui::DragValue::new(&mut self.price_eur).suffix(" Eur"));
+                ui.end_row();
+                ui.label(tr!("kWp max"));
+                ui.add(egui::DragValue::new(&mut self.kwp_max).suffix(" kWp"));
+                ui.end_row();
+                ui.label(tr!("Leistung"));
+                ui.add(egui::DragValue::new(&mut self.energy_out).suffix(" kW"));
                 ui.end_row();
             })
             .response
@@ -84,6 +119,8 @@ pub struct Library {
     pub panels: Vec<Panel>,
     #[serde(default)]
     pub batteries: Vec<Battery>,
+    #[serde(default)]
+    pub inverters: Vec<Inverter>,
 }
 
 impl Default for Library {
@@ -99,6 +136,7 @@ pub struct Project {
     pub panels: Vec<usize>,
     /// library battery index
     pub batteries: Vec<usize>,
+    pub inverters: Vec<usize>,
     /// Specific yield (regional / time based)
     pub yield_kwh_kwp: f32,
     /// How much you consume
@@ -124,6 +162,7 @@ impl Default for Project {
         Self {
             panels: Default::default(),
             batteries: Default::default(),
+            inverters: Default::default(),
             yield_kwh_kwp: 1000.0,
             consumption_kwh: 2500.0,
             price_kwh_eur_buy: 0.4229,
@@ -139,21 +178,37 @@ impl Default for Project {
 
 impl Project {
     pub fn sum(&self, library: &Library) -> ProjectResult {
-        self.panels
+        let mut res = self
+            .panels
             .iter()
             .map(|id| library.panels.get(*id))
             .filter_map(|x| x)
-            .fold(
-                ProjectResult {
-                    price_sum: self.price_installation_electricity + self.price_installation_panels,
-                    ..Default::default()
-                },
-                |acc, p| ProjectResult {
-                    energy_sum_wp: acc.energy_sum_wp + p.energy_wp,
-                    price_sum: acc.price_sum + p.price_eur,
-                    area_sum: acc.area_sum + p.size_cm.x * p.size_cm.y,
-                },
-            )
+            .fold(ProjectResult::default(), |acc, p| ProjectResult {
+                energy_sum_wp: acc.energy_sum_wp + p.energy_wp,
+                price_sum: acc.price_sum + p.price_eur,
+                area_sum: acc.area_sum + p.size_cm.x * p.size_cm.y,
+            });
+
+        res.price_sum += self
+            .batteries
+            .iter()
+            .map(|id| library.batteries.get(*id))
+            .filter_map(|x| x)
+            .map(|b| b.price_eur)
+            .sum::<f32>();
+
+        res.price_sum += self
+            .inverters
+            .iter()
+            .map(|id| library.inverters.get(*id))
+            .filter_map(|x| x)
+            .map(|b| b.price_eur)
+            .sum::<f32>();
+
+        res.price_sum += self.price_installation_electricity;
+        res.price_sum += self.price_installation_panels;
+
+        res
     }
 }
 
@@ -164,7 +219,6 @@ pub struct ProjectResult {
     pub price_sum: f32,
     pub area_sum: f32,
 }
-
 
 /// simple funciton to determine compound interest as alternative investment
 pub fn compound_interest(start_capital: f32, interest: f32, years: f32) -> f32 {

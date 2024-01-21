@@ -19,5 +19,21 @@
       "energy_ahr": 200.0,
       "voltage": 12.0
     }
+  ],
+  "inverters": [
+    {
+      "brand": "Fronius",
+      "model": "Symo GEN24 6.0 Plus",
+      "price_eur": 1990.0,
+      "kwp_max": 9.0,
+      "energy_out": 6.0
+    },
+    {
+      "brand": "Kostal",
+      "model": "PLENTICORE plus 4.2 G2",
+      "price_eur": 1090.0,
+      "kwp_max": 6.3,
+      "energy_out": 4.2
+    }
   ]
 }
