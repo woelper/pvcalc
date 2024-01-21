@@ -1,4 +1,4 @@
-use log::info;
+use log::{info, debug};
 
 /// returns efficiency from 0-1 based on orientation deviation from South and inclination 
 pub fn efficiency(south_deviation_deg: f32, inclination_deg: f32) -> f32{
@@ -108,10 +108,10 @@ pub fn efficiency(south_deviation_deg: f32, inclination_deg: f32) -> f32{
 
     let row_index = (((num_rows.saturating_sub(1)) as f32 / 180. * south_deviation_deg) as usize).min(num_rows.saturating_sub(1)).max(0);
     let col_index = (((num_cols.saturating_sub(1)) as f32 / 90. * inclination_deg) as usize).min(num_cols.saturating_sub(1)).max(0);
-    info!("row {row_index} col {col_index}, rows {num_rows} cols {num_cols}");
+    debug!("row {row_index} col {col_index}, rows {num_rows} cols {num_cols}");
 
 
-    *table.get(col_index).unwrap().get(row_index).unwrap()/100.
+    *table.get(col_index).unwrap_or(&table[0]).get(row_index).unwrap_or(&table[0][0])/100.
 }
 
 
