@@ -95,18 +95,28 @@ impl Default for Library {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
 pub struct Project {
+    /// library panel index
     pub panels: Vec<usize>,
+    /// library battery index
     pub batteries: Vec<usize>,
     /// Specific yield (regional / time based)
     pub yield_kwh_kwp: f32,
+    /// How much you consume
     pub consumption_kwh: f32,
+    /// how much you pay per kWh
     pub price_kwh_eur_buy: f32,
+    /// How much you get per kWh sold
     pub price_kwh_eur_sell: f32,
     /// how much the panel deviates from right-angle to the sun. 0=facing sun
     pub panel_angle_deg: f32,
     /// 0-180. how much the panel deviates from facing south. 0=facing south
     pub panel_orientation: f32,
-    pub interest_rate_deposit: f32
+    /// interest rate for alternate investment (interest rate for deposit)
+    pub interest_rate_deposit: f32,
+    /// Flat fee for panel installation
+    pub price_installation_panels: f32,
+    /// Flat fee for electricity installation
+    pub price_installation_electricity: f32,
 }
 
 impl Default for Project {
@@ -120,7 +130,9 @@ impl Default for Project {
             price_kwh_eur_sell: 0.082,
             panel_angle_deg: 0.0,
             panel_orientation: 0.0,
-            interest_rate_deposit: 0.04
+            interest_rate_deposit: 0.04,
+            price_installation_electricity: 3000.,
+            price_installation_panels: 2000.,
         }
     }
 }
@@ -131,11 +143,17 @@ impl Project {
             .iter()
             .map(|id| library.panels.get(*id))
             .filter_map(|x| x)
-            .fold(ProjectResult::default(), |acc, p| ProjectResult {
-                energy_sum_wp: acc.energy_sum_wp + p.energy_wp,
-                price_sum: acc.price_sum + p.price_eur,
-                area_sum: acc.area_sum + p.size_cm.x * p.size_cm.y,
-            })
+            .fold(
+                ProjectResult {
+                    price_sum: self.price_installation_electricity + self.price_installation_panels,
+                    ..Default::default()
+                },
+                |acc, p| ProjectResult {
+                    energy_sum_wp: acc.energy_sum_wp + p.energy_wp,
+                    price_sum: acc.price_sum + p.price_eur,
+                    area_sum: acc.area_sum + p.size_cm.x * p.size_cm.y,
+                },
+            )
     }
 }
 
@@ -151,6 +169,6 @@ fn wp_to_kwh(kwp: f32) -> f32 {
     1.
 }
 
-pub fn compound_interest(start_capital:f32, interest: f32, years: f32) -> f32 {
-    start_capital * (1.0+interest).powf(years)
+pub fn compound_interest(start_capital: f32, interest: f32, years: f32) -> f32 {
+    start_capital * (1.0 + interest).powf(years)
 }
