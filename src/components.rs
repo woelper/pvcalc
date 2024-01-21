@@ -130,7 +130,7 @@ impl Default for Project {
             price_kwh_eur_sell: 0.082,
             panel_angle_deg: 0.0,
             panel_orientation: 0.0,
-            interest_rate_deposit: 0.04,
+            interest_rate_deposit: 0.042,
             price_installation_electricity: 3000.,
             price_installation_panels: 2000.,
         }
@@ -165,10 +165,8 @@ pub struct ProjectResult {
     pub area_sum: f32,
 }
 
-fn wp_to_kwh(kwp: f32) -> f32 {
-    1.
-}
 
+/// simple funciton to determine compound interest as alternative investment
 pub fn compound_interest(start_capital: f32, interest: f32, years: f32) -> f32 {
     start_capital * (1.0 + interest).powf(years)
 }

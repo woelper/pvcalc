@@ -258,6 +258,15 @@ impl eframe::App for PVApp {
             });
 
             ui.horizontal(|ui| {
+                ui.label(tr!("Zins Festgeld"));
+                ui.add(
+                    egui::DragValue::new(&mut self.project.interest_rate_deposit)
+                        .speed(0.01)
+                        .suffix(" %/100"),
+                );
+            });
+
+            ui.horizontal(|ui| {
                 ui.label(tr!("Verbrauch kWh/Jahr"));
                 ui.add(egui::DragValue::new(&mut self.project.consumption_kwh).suffix(" kWh"));
                 egui::ComboBox::from_id_source("v")
@@ -303,8 +312,6 @@ impl eframe::App for PVApp {
             // how much of the power we generate can be self-used
             let consumption_covered = yield_year_kwh.min(self.project.consumption_kwh);
             let amount_to_sell = (yield_year_kwh - self.project.consumption_kwh).max(0.0);
-            println!("cov {consumption_covered}");
-            println!("sell {amount_to_sell}");
 
             let combined_benefit = consumption_covered * self.project.price_kwh_eur_buy
                 + amount_to_sell * self.project.price_kwh_eur_sell;
