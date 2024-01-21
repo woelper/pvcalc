@@ -1,164 +1,95 @@
 {
-  "Spannung": {
-    "en-US": "Spannung"
+  "Effizienz: {}": {
+    "en-US": "Effizienz: {}"
   },
-  "5 Panels installiert.": {
-    "en-US": "5 Panels installiert."
+  "Installationskosten Panels": {
+    "en-US": "Installationskosten Panels"
   },
-  "6 Panels installiert.": {
-    "en-US": "6 Panels installiert."
+  "{RECTANGLE} Inverter": {
+    "en-US": "{RECTANGLE} Inverter"
   },
-  "Verbrauch kwh/Jahr": {
-    "en-US": "Verbrauch kwh/Jahr"
-  },
-  "Kosten: 0.0 Eur": {
-    "en-US": "Kosten: 0.0 Eur"
-  },
-  " Exposure": {
-    "en-US": " Exposure"
-  },
-  "Preis pro kwh": {
-    "en-US": "Preis pro kwh"
-  },
-  " Verbrauch": {
-    "en-US": " Verbrauch"
-  },
-  "4 Panels installiert.": {
-    "en-US": "4 Panels installiert."
-  },
-  "Kosten: 824.0 Eur": {
-    "en-US": "Kosten: 824.0 Eur"
-  },
-  "1 Panels installiert.": {
-    "en-US": "1 Panels installiert."
-  },
-  "Peak: 0.0 watts": {
-    "en-US": "Peak: 0.0 watts"
-  },
-  "Peak: 2400.0 watts": {
-    "en-US": "Peak: 2400.0 watts"
-  },
-  "Einspeiseverguetung pro kwh": {
-    "en-US": "Einspeiseverguetung pro kwh"
-  },
-  "Peak: 800.0 watts": {
-    "en-US": "Peak: 800.0 watts"
-  },
-  "2 Panels installiert.": {
-    "en-US": "2 Panels installiert."
-  },
-  "7 Panels installiert.": {
-    "en-US": "7 Panels installiert."
-  },
-  "Flaeche: 6.012864 qm": {
-    "en-US": "Flaeche: 6.012864 qm"
-  },
-  " Batteries": {
-    "en-US": " Batteries"
-  },
-  "Flaeche: 10.0214405 qm": {
-    "en-US": "Flaeche: 10.0214405 qm"
-  },
-  "Kosten: 206.0 Eur": {
-    "en-US": "Kosten: 206.0 Eur"
-  },
-  " Batterien": {
-    "en-US": " Batterien"
-  },
-  "Peak: 1600.0 watts": {
-    "en-US": "Peak: 1600.0 watts"
-  },
-  "Peak: 1200.0 watts": {
-    "en-US": "Peak: 1200.0 watts"
-  },
-  "You have 0 modules installed.": {
-    "en-US": "You have 0 modules installed."
-  },
-  "Hinzufuegen": {
-    "en-US": "Hinzufuegen"
-  },
-  "Peak: 2000.0 watts": {
-    "en-US": "Peak: 2000.0 watts"
-  },
-  "Flaeche: 8.017153 qm": {
-    "en-US": "Flaeche: 8.017153 qm"
-  },
-  "8 Panels installiert.": {
-    "en-US": "8 Panels installiert."
-  },
-  "3 Panels installiert.": {
-    "en-US": "3 Panels installiert."
-  },
-  "0 Panels installiert.": {
-    "en-US": "0 Panels installiert."
-  },
-  "Marke": {
-    "en-US": "Marke"
-  },
-  "Tatsaechlicher Ertrag: 0.0 w": {
-    "en-US": "Tatsaechlicher Ertrag: 0.0 w"
-  },
-  "Kosten: 412.0 Eur": {
-    "en-US": "Kosten: 412.0 Eur"
-  },
-  "Flaeche: 0.0 qm": {
-    "en-US": "Flaeche: 0.0 qm"
-  },
-  "Peak: 3200.0 watts": {
-    "en-US": "Peak: 3200.0 watts"
-  },
-  "Peak: 2800.0 watts": {
-    "en-US": "Peak: 2800.0 watts"
-  },
-  "Leistung": {
-    "en-US": "Leistung"
-  },
-  "Modell": {
-    "en-US": "Modell"
-  },
-  "Kosten: 1236.0 Eur": {
-    "en-US": "Kosten: 1236.0 Eur"
-  },
-  "Globalstrahlung": {
-    "en-US": "Globalstrahlung"
-  },
-  "Kosten: 1648.0 Eur": {
-    "en-US": "Kosten: 1648.0 Eur"
+  "Stromkosten pro Jahr bei ausschliesslicher Netznutzung: {regular_energy_cost} €": {
+    "en-US": "Stromkosten pro Jahr bei ausschliesslicher Netznutzung: {regular_energy_cost} €"
   },
   "Preis": {
     "en-US": "Preis"
   },
-  "Peak: 400.0 watts": {
-    "en-US": "Peak: 400.0 watts"
+  "{} Panels installiert auf {} qm ": {
+    "en-US": "{} Panels installiert auf {} qm "
   },
-  "Kosten: 1442.0 Eur": {
-    "en-US": "Kosten: 1442.0 Eur"
+  "{BATTERY_FULL} Batterien": {
+    "en-US": "{BATTERY_FULL} Batterien"
+  },
+  "Leistung Peak: {:?} kWp": {
+    "en-US": "Leistung Peak: {:?} kWp"
+  },
+  "Gesamteinnahmen {}": {
+    "en-US": "Gesamteinnahmen {}"
   },
   "Groesse (W x H)": {
     "en-US": "Groesse (W x H)"
   },
-  "Flaeche: 4.0085764 qm": {
-    "en-US": "Flaeche: 4.0085764 qm"
+  "Einspeiseverguetung pro kWh": {
+    "en-US": "Einspeiseverguetung pro kWh"
   },
-  "Flaeche: 16.034306 qm": {
-    "en-US": "Flaeche: 16.034306 qm"
+  "Neigungswinkel (0 = flach)": {
+    "en-US": "Neigungswinkel (0 = flach)"
   },
-  "Flaeche: 12.025729 qm": {
-    "en-US": "Flaeche: 12.025729 qm"
+  "Gesamtkosten: {:?} €": {
+    "en-US": "Gesamtkosten: {:?} €"
   },
-  "Kosten: 1030.0 Eur": {
-    "en-US": "Kosten: 1030.0 Eur"
+  "Leistung": {
+    "en-US": "Leistung"
   },
-  "Kosten: 618.0 Eur": {
-    "en-US": "Kosten: 618.0 Eur"
+  "Analyse": {
+    "en-US": "Analyse"
   },
-  "Flaeche: 2.0042882 qm": {
-    "en-US": "Flaeche: 2.0042882 qm"
+  "Ausrichtung (Abweichung von Sueden)": {
+    "en-US": "Ausrichtung (Abweichung von Sueden)"
   },
-  "Flaeche: 14.030017 qm": {
-    "en-US": "Flaeche: 14.030017 qm"
+  "Hinzufuegen": {
+    "en-US": "Hinzufuegen"
   },
-  "Panel": {
-    "en-US": "Panel"
+  "Verbrauch kWh/Jahr": {
+    "en-US": "Verbrauch kWh/Jahr"
+  },
+  "Modell": {
+    "en-US": "Modell"
+  },
+  "Zins Festgeld": {
+    "en-US": "Zins Festgeld"
+  },
+  "kWp max": {
+    "en-US": "kWp max"
+  },
+  "{CLOUD_SUN} Exposure": {
+    "en-US": "{CLOUD_SUN} Exposure"
+  },
+  "Installationskosten Elektrik": {
+    "en-US": "Installationskosten Elektrik"
+  },
+  "Globalstrahlung": {
+    "en-US": "Globalstrahlung"
+  },
+  "Alle Angeben ohne Gewaehr!": {
+    "en-US": "Alle Angeben ohne Gewaehr!"
+  },
+  "Alternativ: Investitionssumme verzinsen: {:.0}€ ({:.0}€ mehr)": {
+    "en-US": "Alternativ: Investitionssumme verzinsen: {:.0}€ ({:.0}€ mehr)"
+  },
+  "Amortisiert nach {:.1} Jahren": {
+    "en-US": "Amortisiert nach {:.1} Jahren"
+  },
+  "Marke": {
+    "en-US": "Marke"
+  },
+  "Ertrag pro Jahr: {:?} kWh": {
+    "en-US": "Ertrag pro Jahr: {:?} kWh"
+  },
+  "{CLOUD_SUN} Verbrauch": {
+    "en-US": "{CLOUD_SUN} Verbrauch"
+  },
+  "Preis pro kWh": {
+    "en-US": "Preis pro kWh"
   }
 }
