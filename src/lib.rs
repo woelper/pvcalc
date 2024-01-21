@@ -4,3 +4,4 @@ mod app;
 pub use app::PVApp;
 mod components;
 mod translation;
+mod panel_orientation;
